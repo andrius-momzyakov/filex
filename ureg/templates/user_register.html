@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Регистрация пользователя</title>
+</head>
+<body>
+<h2>Регистрация пользователя</h2>
+    {% if form.non_field_errors %}
+        {{ form.non_field_errors }}
+    {% endif %}
+    {% if form.is_multipart %}
+      <form enctype="multipart/form-data" method="post" action="{{action}}">{% csrf_token %}
+    {% else %}
+      <form method="post" action="{{action}}">{% csrf_token %}
+    {% endif %}
+    <table>
+    {% for field in form%}
+    <tr>
+        {% if field.errors %}
+            <tr><td>{{field.errors}}</td></tr>{% endif %}
+    <td>{{ field.label_tag }}</td><td>{{ field }}</td>
+    </tr>
+    {% endfor %}
+    </table>
+    <input type="submit" value="Загрузить" />
+    <input type="reset" value="Очистить" />
+</form>
+
+</body>
+</html>
