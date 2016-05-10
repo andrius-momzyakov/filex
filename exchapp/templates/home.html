@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Файлообменник</title>
 </head>
+<body>
 {% if user.is_authenticated %}
 Вы зашли как {{ user.username }} </br>
 <table>
@@ -17,6 +18,7 @@
         </td>
     </tr>
 </table>
+<H1>Файлообменник</h2>
 <!--
 <hr>
 <h2>Доступные Вам для скачивания скрытые файлы</h2>
@@ -97,6 +99,8 @@
     <a href="/reg/register/">Зарегистрироваться</a>
           {% endif %}
     <A href="/accounts/login/?next=/">Войти</A>
+    <H1>Файлообменник</h2>
+    <hr>
 {% endif %}
 
 </body>
