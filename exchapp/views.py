@@ -13,14 +13,16 @@ from django.http import StreamingHttpResponse
 from django.core.context_processors import csrf
 from django.contrib.auth.decorators import login_required
 from django.core.files import File
-from django.core.servers.basehttp import FileWrapper
+# from django 1.8: from django.core.servers.basehttp import FileWrapper
+from wsgiref.util import FileWrapper
 from django.forms import ValidationError
 from django.db.models import Q
+
+from django.conf import settings
 from django.forms import Form
 from django.forms import ModelForm
 
-from filex import settings
-from exchapp import models
+from taskman.exchapp import models
 
 # Create your views here.
 
@@ -42,7 +44,8 @@ def delete_from_public(doc_id):
         try:
             os.remove(settings.MEDIA_ROOT + doc.name.name)
         except OSError:
-            pass
+            # убираем точку из имени
+            os.remove(settings.MEDIA_ROOT + doc.name.name[1:])
     except doc.DoesNotExist:
         pass
 
@@ -129,7 +132,10 @@ def home(request):
     else:
         form = FileUploadForm()
     uploaded_files = models.Document.objects.filter(author=request.user)
-    available_files = models.Document.objects.filter(Q(readers=request.user)|Q(author=request.user), is_public=False)
+    available_files = models.Document.objects.filter(Q(readers=request.user)| \
+                                    Q(author=request.user)
+                                    #,is_public=False
+                                    )
     return render_to_response('home.html',context={
                                         'form':form,
                                         'docs':uploaded_files,
@@ -157,9 +163,12 @@ def delete(request, doc_id=None):
             try:
                 os.remove(pref + doc.name.name)
             except OSError:
-                pass
+                # удаляем из имени точку
+                if doc.is_public:
+                    os.remove(pref + doc.name.name[1:])
+                else:
+                    os.remove(pref + doc.name.name[2:])
             doc.delete()
         except doc.DoesNotExist:
             pass
     return redirect('/')
-

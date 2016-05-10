@@ -1,6 +1,7 @@
+# coding:utf-8
 from django.db import models
 from django.contrib.auth.models import User
-from filex import settings
+from django.conf import settings
 
 # Create your models here.
 
@@ -31,7 +32,10 @@ class Document(models.Model):
 
     def href(self):
         import re
-        return settings.DOCS_URL + re.sub('^\./', '', self.name.name)
+        if self.is_public:
+            return settings.DOCS_URL + re.sub('^\./', '', self.name.name)
+        else:
+            return self.privref()
 
     def privref(self):
         import re
@@ -46,6 +50,3 @@ class Document(models.Model):
             list += reader.username
             i += 1
         return list
-
-
-
